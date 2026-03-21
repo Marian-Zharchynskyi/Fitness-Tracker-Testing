@@ -11,7 +11,6 @@ public record CreateUserCommand : IRequest<Result<User, UserException>>
     public required string Email { get; init; }
     public required string Password { get; init; }
     public string? Name { get; init; }
-    public string? Surname { get; init; }
 }
 
 public class CreateUserCommandHandler(IUserRepository userRepository)
@@ -43,10 +42,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
             var user = User.New(
                 userId,
                 request.Email,
-                request.Name,
-                request.Surname,
-                null,
-                passwordHash);
+                request.Name);
 
             return await userRepository.Create(user, cancellationToken);
         }

@@ -8,6 +8,8 @@ namespace Infrastructure.Persistence
         DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Domain.Workouts.Workout> Workouts { get; set; }
+        public DbSet<Domain.Workouts.Exercise> Exercises { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

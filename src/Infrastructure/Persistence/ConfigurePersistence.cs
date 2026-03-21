@@ -37,5 +37,9 @@ public static class ConfigurePersistence
         services.AddScoped<UserRepository>();
         services.AddScoped<IUserRepository>(provider => provider.GetRequiredService<UserRepository>());
         services.AddScoped<IUserQueries>(provider => provider.GetRequiredService<UserRepository>());
+
+        services.AddScoped<WorkoutRepository>();
+        services.AddScoped<IWorkoutRepository>(provider => provider.GetRequiredService<WorkoutRepository>());
+        services.AddScoped<IWorkoutQueries>(provider => provider.GetRequiredService<WorkoutRepository>());
     }
 }

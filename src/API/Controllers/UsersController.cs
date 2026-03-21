@@ -4,6 +4,9 @@ using Application.Common.Interfaces.Queries;
 using Application.Users.Commands;
 using Domain.Users;
 using MediatR;
+using Application.Workouts.Queries;
+using API.DTOs.Workouts;
+using Application.Users.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -39,7 +42,6 @@ public class UsersController(ISender sender, IUserQueries userQueries) : Control
             Email = createUserDto.Email,
             Password = createUserDto.Password,
             Name = createUserDto.Name,
-            Surname = createUserDto.Surname
         };
 
         var result = await sender.Send(input, cancellationToken);
@@ -59,9 +61,7 @@ public class UsersController(ISender sender, IUserQueries userQueries) : Control
         {
             UserId = userId,
             Email = updateUserDto.Email,
-            Name = updateUserDto.Name,
-            Surname = updateUserDto.Surname,
-            PhoneNumber = updateUserDto.PhoneNumber
+            Name = updateUserDto.Name
         };
 
         var result = await sender.Send(input, cancellationToken);
@@ -84,5 +84,37 @@ public class UsersController(ISender sender, IUserQueries userQueries) : Control
         return result.Match<ActionResult<UserDto>>(
             c => UserDto.FromDomainModel(c),
             e => e.ToObjectResult());
+    }
+
+    [HttpGet("{id:guid}/workouts")]
+    public async Task<ActionResult<IReadOnlyList<WorkoutDto>>> GetWorkouts(
+        Guid id, 
+        [FromQuery] DateTime? startDate, 
+        [FromQuery] DateTime? endDate, 
+        CancellationToken ct)
+    {
+        var result = await sender.Send(new GetWorkoutsQuery(id, startDate, endDate), ct);
+        return Ok(result.Select(WorkoutDto.FromDomainModel).ToList());
+    }
+
+    [HttpGet("{id:guid}/stats")]
+    public async Task<ActionResult<UserStatsDto>> GetStats(
+        Guid id, 
+        [FromQuery] DateTime? startDate, 
+        [FromQuery] DateTime? endDate, 
+        CancellationToken ct)
+    {
+        var result = await sender.Send(new GetUserStatsQuery(id, startDate, endDate), ct);
+        return Ok(new UserStatsDto(result.TotalWorkouts, result.AverageDurationMinutes, result.TotalCaloriesBurned));
+    }
+
+    [HttpGet("{id:guid}/progress")]
+    public async Task<ActionResult<IReadOnlyList<ExerciseProgressDto>>> GetProgress(
+        Guid id, 
+        [FromQuery(Name = "exercise")] string exerciseName, 
+        CancellationToken ct)
+    {
+        var result = await sender.Send(new GetExerciseProgressQuery(id, exerciseName), ct);
+        return Ok(result.Select(r => new ExerciseProgressDto(r.Date, r.Sets, r.Reps, r.WeightKg, r.DurationSeconds)).ToList());
     }
 }

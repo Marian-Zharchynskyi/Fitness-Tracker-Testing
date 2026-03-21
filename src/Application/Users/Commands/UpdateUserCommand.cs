@@ -11,8 +11,8 @@ public record UpdateUserCommand : IRequest<Result<User, UserException>>
     public required Guid UserId { get; init; }
     public required string Email { get; init; }
     public string? Name { get; init; }
-    public string? Surname { get; init; }
-    public string? PhoneNumber { get; init; }
+    public decimal? HeightCm { get; init; }
+    public decimal? WeightKg { get; init; }
 }
 
 public class UpdateUserCommandHandler(IUserRepository userRepository)
@@ -33,7 +33,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
                 return await existingEmail.Match(
                     e => Task.FromResult<Result<User, UserException>>(
                         new UserByThisEmailAlreadyExistsException(userId)),
-                    async () => await UpdateEntity(u, request.Email, request.Name, request.Surname, request.PhoneNumber,
+                    async () => await UpdateEntity(u, request.Email, request.Name, request.HeightCm, request.WeightKg,
                         cancellationToken));
             },
             () => Task.FromResult<Result<User, UserException>>(
@@ -44,13 +44,14 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
         User user,
         string email,
         string? name,
-        string? surname,
-        string? phoneNumber,
+        decimal? heightCm,
+        decimal? weightKg,
         CancellationToken cancellationToken)
     {
         try
         {
-            user.UpdateUser(email, name, surname, phoneNumber);
+            user.UpdateUser(email, name);
+            user.SetMetrics(heightCm, weightKg);
             return await userRepository.Update(user, cancellationToken);
         }
         catch (Exception exception)

@@ -6,16 +6,14 @@ public record UserDto(
     Guid Id,
     string Email,
     string? Name,
-    string? Surname,
-    string? PhoneNumber,
-    bool HasPassword)
+    decimal? HeightCm,
+    decimal? WeightKg)
 {
     public static UserDto FromDomainModel(User user)
         => new(
             user.Id.Value,
             user.Email,
             user.Name,
-            user.Surname,
-            user.PhoneNumber,
-            !string.IsNullOrEmpty(user.PasswordHash));
+            user.HeightCm,
+            user.WeightKg);
 }

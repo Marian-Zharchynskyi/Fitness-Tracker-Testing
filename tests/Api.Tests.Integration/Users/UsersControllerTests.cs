@@ -1,13 +1,14 @@
-using System.Net;
 using System.Net.Http.Json;
-using API.DTOs.Users;
-using Domain.Users;
 using FluentAssertions;
 using Tests.Common;
 using Tests.Data;
-using Xunit;
 
 namespace Api.Tests.Integration.Users;
+
+using System.Net;
+using API.DTOs.Users;
+using Domain.Users;
+using Xunit;
 
 public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
 {
@@ -64,8 +65,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var request = new CreateUserDto(
             Email: "new.user@fitness.com",
             Password: "secure123",
-            Name: "New",
-            Surname: "User");
+            Name: "New");
 
         // Act
         var response = await Client.PostAsJsonAsync("users/create", request);
@@ -75,8 +75,6 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var user = await response.ToResponseModel<UserDto>();
         user.Email.Should().Be(request.Email);
         user.Name.Should().Be(request.Name);
-        user.Surname.Should().Be(request.Surname);
-        user.HasPassword.Should().BeTrue();
 
         // Verify in database
         Context.Users.Any(u => u.Id == new UserId(user.Id)).Should().BeTrue();
@@ -89,8 +87,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var request = new CreateUserDto(
             Email: _mainUser.Email,
             Password: "password123",
-            Name: "Duplicate",
-            Surname: "User");
+            Name: "Duplicate");
 
         // Act
         var response = await Client.PostAsJsonAsync("users/create", request);
@@ -106,8 +103,8 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var request = new UpdateUserDto(
             Email: "updated@fitness.com",
             Name: "Updated",
-            Surname: "Name",
-            PhoneNumber: "+380501234567");
+            HeightCm: 180,
+            WeightKg: 80);
 
         // Act
         var response = await Client.PutAsJsonAsync($"users/update/{_secondUser.Id.Value}", request);
@@ -117,7 +114,8 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var user = await response.ToResponseModel<UserDto>();
         user.Email.Should().Be(request.Email);
         user.Name.Should().Be(request.Name);
-        user.PhoneNumber.Should().Be(request.PhoneNumber);
+        user.HeightCm.Should().Be(request.HeightCm);
+        user.WeightKg.Should().Be(request.WeightKg);
     }
 
     [Fact]
@@ -127,8 +125,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         var request = new CreateUserDto(
             Email: "delete.me@fitness.com",
             Password: "password123",
-            Name: "Delete",
-            Surname: "Me");
+            Name: "Delete");
 
         var createResponse = await Client.PostAsJsonAsync("users/create", request);
         createResponse.IsSuccessStatusCode.Should().BeTrue();

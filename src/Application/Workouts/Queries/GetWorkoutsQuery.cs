@@ -11,6 +11,13 @@ public class GetWorkoutsQueryHandler(IWorkoutQueries workoutQueries) : IRequestH
 {
     public Task<IReadOnlyList<Workout>> Handle(GetWorkoutsQuery request, CancellationToken cancellationToken)
     {
-        return workoutQueries.GetByUserId(new UserId(request.UserId), request.StartDate, request.EndDate, cancellationToken);
+        var utcStartDate = request.StartDate.HasValue 
+            ? DateTime.SpecifyKind(request.StartDate.Value, DateTimeKind.Utc) 
+            : (DateTime?)null;
+        var utcEndDate = request.EndDate.HasValue 
+            ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc) 
+            : (DateTime?)null;
+            
+        return workoutQueries.GetByUserId(new UserId(request.UserId), utcStartDate, utcEndDate, cancellationToken);
     }
 }

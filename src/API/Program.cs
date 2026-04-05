@@ -46,3 +46,5 @@ await app.InitialiseDb();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

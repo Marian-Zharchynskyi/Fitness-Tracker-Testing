@@ -10,7 +10,14 @@ public class GetUserStatsQueryHandler(IWorkoutQueries workoutQueries) : IRequest
 {
     public async Task<UserStatsResult> Handle(GetUserStatsQuery request, CancellationToken cancellationToken)
     {
-        var workouts = await workoutQueries.GetByUserId(new UserId(request.UserId), request.StartDate, request.EndDate, cancellationToken);
+        var utcStartDate = request.StartDate.HasValue 
+            ? DateTime.SpecifyKind(request.StartDate.Value, DateTimeKind.Utc) 
+            : (DateTime?)null;
+        var utcEndDate = request.EndDate.HasValue 
+            ? DateTime.SpecifyKind(request.EndDate.Value, DateTimeKind.Utc) 
+            : (DateTime?)null;
+            
+        var workouts = await workoutQueries.GetByUserId(new UserId(request.UserId), utcStartDate, utcEndDate, cancellationToken);
 
         var totalWorkouts = workouts.Count;
         var totalCalories = workouts.Sum(w => w.CaloriesBurned ?? 0);

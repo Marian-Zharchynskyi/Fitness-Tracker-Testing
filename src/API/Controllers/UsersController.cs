@@ -61,7 +61,9 @@ public class UsersController(ISender sender, IUserQueries userQueries) : Control
         {
             UserId = userId,
             Email = updateUserDto.Email,
-            Name = updateUserDto.Name
+            Name = updateUserDto.Name,
+            HeightCm = updateUserDto.HeightCm,
+            WeightKg = updateUserDto.WeightKg
         };
 
         var result = await sender.Send(input, cancellationToken);

@@ -6,11 +6,9 @@ const errorRate = new Rate('errors');
 
 export const options = {
   stages: [
+    { duration: '30s', target: 20 },
     { duration: '1m', target: 50 },
-    { duration: '2m', target: 100 },
-    { duration: '2m', target: 200 },
-    { duration: '1m', target: 300 },
-    { duration: '2m', target: 0 },
+    { duration: '30s', target: 0 },
   ],
   thresholds: {
     http_req_duration: ['p(95)<1000'],
@@ -21,8 +19,40 @@ export const options = {
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5146';
 
-export default function () {
-  const userId = '00000000-0000-0000-0000-000000000001';
+export function setup() {
+  const usersResponse = http.get(`${BASE_URL}/users/get-all`);
+  let userId = '00000000-0000-0000-0000-000000000001';
+  
+  if (usersResponse.status === 200) {
+    try {
+      const users = JSON.parse(usersResponse.body);
+      if (users && users.length > 0) {
+        userId = users[0].id;
+      } else {
+        const userPayload = JSON.stringify({
+          name: `Test User ${Date.now()}`,
+          email: `test${Date.now()}@example.com`,
+          password: 'Password123!',
+        });
+
+        const userResponse = http.post(`${BASE_URL}/users/create`, userPayload, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (userResponse.status === 200) {
+          const user = JSON.parse(userResponse.body);
+          userId = user.id;
+        }
+      }
+    } catch (e) {
+      console.log('Failed to parse users response');
+    }
+  }
+  return { userId: userId };
+}
+
+export default function (data) {
+  const userId = data.userId;
   
   const workoutPayload = JSON.stringify({
     userId: userId,

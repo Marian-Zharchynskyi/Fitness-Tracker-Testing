@@ -3,20 +3,20 @@ using Application.Users.Queries;
 using Domain.Users;
 using Domain.Workouts;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 namespace Tests.Unit.Application;
 
 public class UserStatsCalculationTests
 {
-    private readonly Mock<IWorkoutQueries> _workoutQueriesMock;
+    private readonly IWorkoutQueries _workoutQueriesMock;
     private readonly GetUserStatsQueryHandler _handler;
 
     public UserStatsCalculationTests()
     {
-        _workoutQueriesMock = new Mock<IWorkoutQueries>();
-        _handler = new GetUserStatsQueryHandler(_workoutQueriesMock.Object);
+        _workoutQueriesMock = Substitute.For<IWorkoutQueries>();
+        _handler = new GetUserStatsQueryHandler(_workoutQueriesMock);
     }
 
     [Fact]
@@ -31,8 +31,8 @@ public class UserStatsCalculationTests
         };
 
         _workoutQueriesMock
-            .Setup(x => x.GetByUserId(userId, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(workouts);
+            .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
+            .Returns(workouts);
 
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -49,8 +49,8 @@ public class UserStatsCalculationTests
         var workouts = new List<Workout>();
 
         _workoutQueriesMock
-            .Setup(x => x.GetByUserId(userId, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(workouts);
+            .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
+            .Returns(workouts);
 
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -68,15 +68,13 @@ public class UserStatsCalculationTests
         var endDate = new DateTime(2024, 12, 31);
 
         _workoutQueriesMock
-            .Setup(x => x.GetByUserId(userId, startDate, endDate, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Workout>());
+            .GetByUserId(userId, startDate, endDate, Arg.Any<CancellationToken>())
+            .Returns(new List<Workout>());
 
         var query = new GetUserStatsQuery(userId.Value, startDate, endDate);
         await _handler.Handle(query, CancellationToken.None);
 
-        _workoutQueriesMock.Verify(
-            x => x.GetByUserId(userId, startDate, endDate, It.IsAny<CancellationToken>()),
-            Times.Once);
+        _workoutQueriesMock.Received(1).GetByUserId(userId, startDate, endDate, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -91,8 +89,8 @@ public class UserStatsCalculationTests
         var workouts = new List<Workout> { workout1, workout2 };
 
         _workoutQueriesMock
-            .Setup(x => x.GetByUserId(userId, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(workouts);
+            .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
+            .Returns(workouts);
 
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);

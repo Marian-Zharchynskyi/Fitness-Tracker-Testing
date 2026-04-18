@@ -17,7 +17,7 @@ public abstract class BaseDatabaseTest : IAsyncLifetime
 
     protected ApplicationDbContext Context { get; private set; } = null!;
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
 
@@ -28,6 +28,7 @@ public abstract class BaseDatabaseTest : IAsyncLifetime
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(dataSource)
             .UseSnakeCaseNamingConvention()
+            .EnableServiceProviderCaching(false)
             .Options;
 
         Context = new ApplicationDbContext(options);

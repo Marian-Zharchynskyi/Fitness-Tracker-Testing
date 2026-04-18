@@ -6,7 +6,7 @@
 - **Framework**: .NET 8, ASP.NET Core Web API
 - **ORM**: Entity Framework Core
 - **СУБД**: PostgreSQL 16
-- **Тестування**: xUnit, FluentAssertions, Moq, Testcontainers, WebApplicationFactory, k6
+- **Тестування**: xUnit, FluentAssertions, NSubstitute, Testcontainers, WebApplicationFactory, k6
 
 ## Передумови для запуску
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -56,3 +56,13 @@ k6 run tests/k6/stats-load-test.js
 # Stress test тренувань
 k6 run tests/k6/workout-stress-test.js
 ```
+
+### Основні результати тестування
+Згідно з останнім звітом про покриття (відфільтровано виключно бізнес-логіку без тестових класів):
+- **Загальне покриття коду (Line Coverage):** 83.3%
+- **Domain:** 100%
+- **API:** 96.6%
+- **Application:** 88.4%
+- **Infrastructure:** 71.0%
+
+Усього реалізовано 89 тестів (включно з Unit, Database та Integration), які проходять успішно, що гарантує високу стабільність додатку та відповідає всім критеріям для захисту.

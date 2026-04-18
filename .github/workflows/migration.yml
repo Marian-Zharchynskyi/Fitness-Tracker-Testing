@@ -1,0 +1,58 @@
+name: Migration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: fitness-tracker-db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Restore
+        run: dotnet restore Fitness-Tracker.sln
+
+      - name: Build
+        run: dotnet build Fitness-Tracker.sln --no-restore
+
+      - name: Check for pending model changes
+        run: dotnet ef migrations has-pending-model-changes --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj
+
+      - name: Apply migrations
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=fitness-tracker-db;Username=postgres;Password=postgres"
+        run: dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj
+
+      - name: Generate idempotent SQL script
+        run: dotnet ef migrations script --idempotent --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj --output migrations.sql
+
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-sql
+          path: migrations.sql

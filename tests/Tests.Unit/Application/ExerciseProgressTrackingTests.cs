@@ -3,20 +3,20 @@ using Application.Users.Queries;
 using Domain.Users;
 using Domain.Workouts;
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 namespace Tests.Unit.Application;
 
 public class ExerciseProgressTrackingTests
 {
-    private readonly Mock<IWorkoutQueries> _workoutQueriesMock;
+    private readonly IWorkoutQueries _workoutQueriesMock;
     private readonly GetExerciseProgressQueryHandler _handler;
 
     public ExerciseProgressTrackingTests()
     {
-        _workoutQueriesMock = new Mock<IWorkoutQueries>();
-        _handler = new GetExerciseProgressQueryHandler(_workoutQueriesMock.Object);
+        _workoutQueriesMock = Substitute.For<IWorkoutQueries>();
+        _handler = new GetExerciseProgressQueryHandler(_workoutQueriesMock);
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class ExerciseProgressTrackingTests
         var workouts = new List<Workout> { workout1, workout2, workout3 };
 
         _workoutQueriesMock
-            .Setup(x => x.GetAllByUserId(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(workouts);
+            .GetAllByUserId(userId, Arg.Any<CancellationToken>())
+            .Returns(workouts);
 
         var query = new GetExerciseProgressQuery(userId.Value, exerciseName);
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -59,8 +59,8 @@ public class ExerciseProgressTrackingTests
         var workout = CreateWorkoutWithExercise(userId, DateTime.UtcNow.AddDays(-1), "Bench Press", 3, 10, 80);
 
         _workoutQueriesMock
-            .Setup(x => x.GetAllByUserId(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Workout> { workout });
+            .GetAllByUserId(userId, Arg.Any<CancellationToken>())
+            .Returns(new List<Workout> { workout });
 
         var query = new GetExerciseProgressQuery(userId.Value, "BENCH PRESS");
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -75,8 +75,8 @@ public class ExerciseProgressTrackingTests
         var workout = CreateWorkoutWithExercise(userId, DateTime.UtcNow.AddDays(-1), "Squat", 3, 10, 100);
 
         _workoutQueriesMock
-            .Setup(x => x.GetAllByUserId(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Workout> { workout });
+            .GetAllByUserId(userId, Arg.Any<CancellationToken>())
+            .Returns(new List<Workout> { workout });
 
         var query = new GetExerciseProgressQuery(userId.Value, "Bench Press");
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -97,8 +97,8 @@ public class ExerciseProgressTrackingTests
         var workouts = new List<Workout> { workout1, workout2, workout3 };
 
         _workoutQueriesMock
-            .Setup(x => x.GetAllByUserId(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(workouts);
+            .GetAllByUserId(userId, Arg.Any<CancellationToken>())
+            .Returns(workouts);
 
         var query = new GetExerciseProgressQuery(userId.Value, exerciseName);
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -125,8 +125,8 @@ public class ExerciseProgressTrackingTests
         workout.AddExercise(squat);
 
         _workoutQueriesMock
-            .Setup(x => x.GetAllByUserId(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Workout> { workout });
+            .GetAllByUserId(userId, Arg.Any<CancellationToken>())
+            .Returns(new List<Workout> { workout });
 
         var query = new GetExerciseProgressQuery(userId.Value, "Bench Press");
         var result = await _handler.Handle(query, CancellationToken.None);

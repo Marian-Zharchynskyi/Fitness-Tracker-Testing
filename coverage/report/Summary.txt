@@ -1,0 +1,104 @@
+Summary
+  Generated on: 18.04.2026 - 17:42:17
+  Coverage date: 18.04.2026 - 16:58:00 - 18.04.2026 - 17:41:45
+  Parser: MultiReport (11x Cobertura)
+  Assemblies: 5
+  Classes: 74
+  Files: 57
+  Line coverage: 83.3%
+  Covered lines: 1067
+  Uncovered lines: 213
+  Coverable lines: 1280
+  Total lines: 2086
+  Branch coverage: 78.1% (75 of 96)
+  Covered branches: 75
+  Total branches: 96
+  Method coverage: 96.1% (247 of 257)
+  Full method coverage: 87.9% (226 of 257)
+  Covered methods: 247
+  Fully covered methods: 226
+  Total methods: 257
+
+Fitness-Tracker.API                                                         96.6%
+  API.Controllers.UsersController                                            100%
+  API.Controllers.WorkoutsController                                        96.8%
+  API.DTOs.Users.CreateUserDto                                               100%
+  API.DTOs.Users.ExerciseProgressDto                                         100%
+  API.DTOs.Users.UpdateUserDto                                               100%
+  API.DTOs.Users.UserDto                                                     100%
+  API.DTOs.Users.UserStatsDto                                                100%
+  API.DTOs.Workouts.AddExerciseDto                                           100%
+  API.DTOs.Workouts.CreateWorkoutDto                                         100%
+  API.DTOs.Workouts.ExerciseDto                                              100%
+  API.DTOs.Workouts.UpdateWorkoutDto                                         100%
+  API.DTOs.Workouts.WorkoutDto                                               100%
+  API.Modules.DbModule                                                       100%
+  API.Modules.Errors.UserErrorHandler                                       78.9%
+  API.Modules.SetupModule                                                    100%
+  Program                                                                   90.9%
+
+Fitness-Tracker.Application                                                 88.4%
+  Application.Common.Behaviours.ValidationBehaviour<T1, T2>                 83.3%
+  Application.Common.Result<T1, T2>                                          100%
+  Application.ConfigureApplication                                           100%
+  Application.Users.Commands.CreateUserCommand                               100%
+  Application.Users.Commands.CreateUserCommandHandler                       86.3%
+  Application.Users.Commands.CreateUserCommandValidator                      100%
+  Application.Users.Commands.DeleteUserCommand                               100%
+  Application.Users.Commands.DeleteUserCommandHandler                         80%
+  Application.Users.Commands.DeleteUserCommandValidator                      100%
+  Application.Users.Commands.UpdateUserCommand                               100%
+  Application.Users.Commands.UpdateUserCommandHandler                       82.1%
+  Application.Users.Commands.UpdateUserCommandValidator                      100%
+  Application.Users.Exceptions.EmailOrPasswordAreIncorrect                     0%
+  Application.Users.Exceptions.ImageSaveException                              0%
+  Application.Users.Exceptions.InvalidPasswordException                        0%
+  Application.Users.Exceptions.OAuthEmailCannotBeChangedException              0%
+  Application.Users.Exceptions.UserByThisEmailAlreadyExistsException         100%
+  Application.Users.Exceptions.UserException                                 100%
+  Application.Users.Exceptions.UserNotFoundException                           0%
+  Application.Users.Exceptions.UserUnknownException                            0%
+  Application.Users.Queries.ExerciseProgressResult                           100%
+  Application.Users.Queries.GetExerciseProgressQuery                         100%
+  Application.Users.Queries.GetExerciseProgressQueryHandler                  100%
+  Application.Users.Queries.GetUserStatsQuery                                100%
+  Application.Users.Queries.GetUserStatsQueryHandler                         100%
+  Application.Users.Queries.UserStatsResult                                  100%
+  Application.Workouts.Commands.AddExerciseCommand                           100%
+  Application.Workouts.Commands.AddExerciseCommandHandler                   86.6%
+  Application.Workouts.Commands.CreateWorkoutCommand                         100%
+  Application.Workouts.Commands.CreateWorkoutCommandHandler                 88.2%
+  Application.Workouts.Commands.DeleteWorkoutCommand                         100%
+  Application.Workouts.Commands.DeleteWorkoutCommandHandler                 77.7%
+  Application.Workouts.Commands.UpdateWorkoutCommand                         100%
+  Application.Workouts.Commands.UpdateWorkoutCommandHandler                 79.4%
+  Application.Workouts.Exceptions.WorkoutException                           100%
+  Application.Workouts.Queries.GetWorkoutQuery                               100%
+  Application.Workouts.Queries.GetWorkoutQueryHandler                        100%
+  Application.Workouts.Queries.GetWorkoutsQuery                              100%
+  Application.Workouts.Queries.GetWorkoutsQueryHandler                       100%
+
+Fitness-Tracker.Domain                                                       100%
+  Domain.Users.User                                                          100%
+  Domain.Users.UserId                                                        100%
+  Domain.Workouts.Exercise                                                   100%
+  Domain.Workouts.ExerciseId                                                 100%
+  Domain.Workouts.Workout                                                    100%
+  Domain.Workouts.WorkoutId                                                  100%
+
+Fitness-Tracker.Infrastructure                                                71%
+  Infrastructure.ConfigureInfrastructure                                     100%
+  Infrastructure.Persistence.ApplicationDbContext                            100%
+  Infrastructure.Persistence.ApplicationDbContextInitialiser                75.6%
+  Infrastructure.Persistence.Configurations.ExerciseConfiguration            100%
+  Infrastructure.Persistence.Configurations.UserConfiguration                100%
+  Infrastructure.Persistence.Configurations.WorkoutConfiguration             100%
+  Infrastructure.Persistence.ConfigurePersistence                           95.6%
+  Infrastructure.Persistence.Converters.DateTimeUtcConverter                   0%
+  Infrastructure.Persistence.Migrations.ApplicationDbContextModelSnapshot      0%
+  Infrastructure.Persistence.Migrations.Initial                             96.2%
+  Infrastructure.Persistence.Repositories.UserRepository                    92.3%
+  Infrastructure.Persistence.Repositories.WorkoutRepository                  100%
+
+Tests.Common                                                                   0%
+  AutoGeneratedProgram                                                         0%

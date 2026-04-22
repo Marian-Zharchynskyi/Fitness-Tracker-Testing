@@ -22,6 +22,7 @@ public class ExerciseProgressTrackingTests
     [Fact]
     public async Task Handle_WithMatchingExercises_ShouldReturnProgressOverTime()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var exerciseName = "Bench Press";
 
@@ -35,9 +36,11 @@ public class ExerciseProgressTrackingTests
             .GetAllByUserId(userId, Arg.Any<CancellationToken>())
             .Returns(workouts);
 
+        // Act
         var query = new GetExerciseProgressQuery(userId.Value, exerciseName);
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.Should().HaveCount(3);
         result[0].Sets.Should().Be(3);
         result[0].Reps.Should().Be(8);
@@ -55,6 +58,7 @@ public class ExerciseProgressTrackingTests
     [Fact]
     public async Task Handle_WithCaseInsensitiveMatch_ShouldReturnResults()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workout = CreateWorkoutWithExercise(userId, DateTime.UtcNow.AddDays(-1), "Bench Press", 3, 10, 80);
 
@@ -62,15 +66,18 @@ public class ExerciseProgressTrackingTests
             .GetAllByUserId(userId, Arg.Any<CancellationToken>())
             .Returns(new List<Workout> { workout });
 
+        // Act
         var query = new GetExerciseProgressQuery(userId.Value, "BENCH PRESS");
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.Should().HaveCount(1);
     }
 
     [Fact]
     public async Task Handle_WithNoMatchingExercises_ShouldReturnEmptyList()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workout = CreateWorkoutWithExercise(userId, DateTime.UtcNow.AddDays(-1), "Squat", 3, 10, 100);
 
@@ -78,15 +85,18 @@ public class ExerciseProgressTrackingTests
             .GetAllByUserId(userId, Arg.Any<CancellationToken>())
             .Returns(new List<Workout> { workout });
 
+        // Act
         var query = new GetExerciseProgressQuery(userId.Value, "Bench Press");
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.Should().BeEmpty();
     }
 
     [Fact]
     public async Task Handle_ShouldOrderResultsByDate()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var exerciseName = "Squat";
 
@@ -100,9 +110,11 @@ public class ExerciseProgressTrackingTests
             .GetAllByUserId(userId, Arg.Any<CancellationToken>())
             .Returns(workouts);
 
+        // Act
         var query = new GetExerciseProgressQuery(userId.Value, exerciseName);
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.Should().HaveCount(3);
         result[0].WeightKg.Should().Be(90);
         result[1].WeightKg.Should().Be(95);
@@ -112,6 +124,7 @@ public class ExerciseProgressTrackingTests
     [Fact]
     public async Task Handle_WithMultipleExercisesInWorkout_ShouldReturnOnlyMatchingOnes()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workout = Workout.New(new WorkoutId(Guid.NewGuid()), userId, "Full Body");
         workout.SetDate(DateTime.UtcNow.AddDays(-1));
@@ -128,9 +141,11 @@ public class ExerciseProgressTrackingTests
             .GetAllByUserId(userId, Arg.Any<CancellationToken>())
             .Returns(new List<Workout> { workout });
 
+        // Act
         var query = new GetExerciseProgressQuery(userId.Value, "Bench Press");
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.Should().HaveCount(1);
         result[0].WeightKg.Should().Be(80);
     }

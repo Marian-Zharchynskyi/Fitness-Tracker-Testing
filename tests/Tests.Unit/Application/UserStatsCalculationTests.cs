@@ -22,6 +22,7 @@ public class UserStatsCalculationTests
     [Fact]
     public async Task Handle_WithMultipleWorkouts_ShouldCalculateCorrectStats()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workouts = new List<Workout>
         {
@@ -34,9 +35,11 @@ public class UserStatsCalculationTests
             .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
             .Returns(workouts);
 
+        // Act
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.TotalWorkouts.Should().Be(3);
         result.TotalCaloriesBurned.Should().Be(1050);
         result.AverageDurationMinutes.Should().Be(45);
@@ -45,6 +48,7 @@ public class UserStatsCalculationTests
     [Fact]
     public async Task Handle_WithNoWorkouts_ShouldReturnZeroStats()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workouts = new List<Workout>();
 
@@ -52,9 +56,11 @@ public class UserStatsCalculationTests
             .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
             .Returns(workouts);
 
+        // Act
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.TotalWorkouts.Should().Be(0);
         result.TotalCaloriesBurned.Should().Be(0);
         result.AverageDurationMinutes.Should().Be(0);
@@ -63,6 +69,7 @@ public class UserStatsCalculationTests
     [Fact]
     public async Task Handle_WithDateRange_ShouldPassDatesToQuery()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var startDate = new DateTime(2024, 1, 1);
         var endDate = new DateTime(2024, 12, 31);
@@ -71,15 +78,18 @@ public class UserStatsCalculationTests
             .GetByUserId(userId, startDate, endDate, Arg.Any<CancellationToken>())
             .Returns(new List<Workout>());
 
+        // Act
         var query = new GetUserStatsQuery(userId.Value, startDate, endDate);
         await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         _workoutQueriesMock.Received(1).GetByUserId(userId, startDate, endDate, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Handle_WithWorkoutsHavingNullMetrics_ShouldTreatAsZero()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var workout1 = Workout.New(new WorkoutId(Guid.NewGuid()), userId, "Workout 1");
         workout1.SetMetrics(30, 200);
@@ -92,9 +102,11 @@ public class UserStatsCalculationTests
             .GetByUserId(userId, null, null, Arg.Any<CancellationToken>())
             .Returns(workouts);
 
+        // Act
         var query = new GetUserStatsQuery(userId.Value, null, null);
         var result = await _handler.Handle(query, CancellationToken.None);
 
+        // Assert
         result.TotalWorkouts.Should().Be(2);
         result.TotalCaloriesBurned.Should().Be(200);
         result.AverageDurationMinutes.Should().Be(15);

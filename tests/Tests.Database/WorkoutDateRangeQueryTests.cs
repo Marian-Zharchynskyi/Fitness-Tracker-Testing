@@ -11,10 +11,12 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
     [Fact]
     public async Task GetWorkoutsByDateRange_ShouldReturnOnlyWorkoutsInRange()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
+        // Act
         var workout1 = CreateWorkout(userId, "Workout 1", DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         var workout2 = CreateWorkout(userId, "Workout 2", DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         var workout3 = CreateWorkout(userId, "Workout 3", DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
@@ -29,6 +31,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
             .Where(w => w.UserId == userId && w.Date >= startDate && w.Date <= endDate)
             .ToListAsync();
 
+        // Assert
         results.Should().HaveCount(1);
         results[0].Name.Should().Be("Workout 2");
     }

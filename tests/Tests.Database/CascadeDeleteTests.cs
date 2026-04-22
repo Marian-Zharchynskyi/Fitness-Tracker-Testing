@@ -11,10 +11,12 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_ShouldCascadeDeleteExercises()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
+        // Act
         var workout = Workout.New(new WorkoutId(Guid.NewGuid()), userId, "Strength Training");
         workout.SetDate(DateTime.UtcNow.AddDays(-1));
         workout.SetMetrics(60, 400);
@@ -38,6 +40,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
         var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workout.Id);
         workoutExists.Should().BeFalse();
 
+        // Assert
         foreach (var exerciseId in exerciseIds)
         {
             var exerciseExists = await Context.Exercises.AnyAsync(e => e.Id == exerciseId);

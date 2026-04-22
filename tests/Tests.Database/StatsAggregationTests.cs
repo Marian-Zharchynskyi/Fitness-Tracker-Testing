@@ -11,10 +11,12 @@ public class StatsAggregationTests : BaseDatabaseTest
     [Fact]
     public async Task AggregateStats_ShouldCalculateTotalWorkoutsCorrectly()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
+        // Act
         var workout1 = CreateWorkout(userId, 30, 200);
         var workout2 = CreateWorkout(userId, 45, 350);
         var workout3 = CreateWorkout(userId, 60, 500);
@@ -26,6 +28,7 @@ public class StatsAggregationTests : BaseDatabaseTest
             .Where(w => w.UserId == userId)
             .CountAsync();
 
+        // Assert
         totalWorkouts.Should().Be(3);
     }
 

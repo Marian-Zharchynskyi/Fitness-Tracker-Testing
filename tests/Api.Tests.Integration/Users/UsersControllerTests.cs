@@ -22,6 +22,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task ShouldGetAllUsers()
     {
+        // Arrange
         // Act
         var response = await Client.GetAsync("users/get-all");
 
@@ -35,6 +36,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task ShouldGetUserById()
     {
+        // Arrange
         // Act
         var response = await Client.GetAsync($"users/get-by-id/{_mainUser.Id.Value}");
 
@@ -76,7 +78,6 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
         user.Email.Should().Be(request.Email);
         user.Name.Should().Be(request.Name);
 
-        // Verify in database
         Context.Users.Any(u => u.Id == new UserId(user.Id)).Should().BeTrue();
     }
 
@@ -121,7 +122,7 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task ShouldDeleteUser()
     {
-        // Arrange — create a throwaway user to delete
+        // Arrange
         var request = new CreateUserDto(
             Email: "delete.me@fitness.com",
             Password: "password123",
@@ -141,14 +142,12 @@ public class UsersControllerTests : BaseIntegrationTest, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        // Seed test users into the database
         Context.Users.AddRange(_mainUser, _secondUser);
         await SaveChangesAsync();
     }
 
     public async Task DisposeAsync()
     {
-        // Clean up all users after each test class run
         Context.Users.RemoveRange(Context.Users);
         await SaveChangesAsync();
     }

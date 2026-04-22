@@ -11,6 +11,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_ShouldCascadeDeleteExercises()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -32,12 +33,14 @@ public class CascadeDeleteTests : BaseDatabaseTest
 
         var exerciseIds = workout.Exercises.Select(e => e.Id).ToList();
 
+        // Act
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
-
+        // Assert
         var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workout.Id);
         workoutExists.Should().BeFalse();
 
+        // Assert
         foreach (var exerciseId in exerciseIds)
         {
             var exerciseExists = await Context.Exercises.AnyAsync(e => e.Id == exerciseId);
@@ -48,6 +51,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteUser_ShouldCascadeDeleteWorkoutsAndExercises()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -74,15 +78,18 @@ public class CascadeDeleteTests : BaseDatabaseTest
         var workoutIds = new[] { workout1.Id, workout2.Id };
         var exerciseIds = new[] { exercise1.Id, exercise2.Id };
 
+        // Act
         Context.Users.Remove(user);
         await SaveChangesAsync();
 
+        // Assert
         var userExists = await Context.Users.AnyAsync(u => u.Id == userId);
         userExists.Should().BeFalse();
 
         foreach (var workoutId in workoutIds)
         {
-            var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workoutId);
+        // Assert
+        var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workoutId);
             workoutExists.Should().BeFalse();
         }
 
@@ -96,6 +103,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_WithNoExercises_ShouldDeleteSuccessfully()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -107,9 +115,10 @@ public class CascadeDeleteTests : BaseDatabaseTest
         Context.Workouts.Add(workout);
         await SaveChangesAsync();
 
+        // Act
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
-
+        // Assert
         var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workout.Id);
         workoutExists.Should().BeFalse();
     }
@@ -117,6 +126,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_ShouldNotAffectOtherWorkouts()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -140,9 +150,11 @@ public class CascadeDeleteTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2);
         await SaveChangesAsync();
 
+        // Act
         Context.Workouts.Remove(workout1);
         await SaveChangesAsync();
 
+        //Assert
         var workout1Exists = await Context.Workouts.AnyAsync(w => w.Id == workout1.Id);
         var workout2Exists = await Context.Workouts.AnyAsync(w => w.Id == workout2.Id);
         var exercise1Exists = await Context.Exercises.AnyAsync(e => e.Id == exercise1.Id);

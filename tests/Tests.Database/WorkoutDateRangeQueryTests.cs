@@ -11,10 +11,12 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
     [Fact]
     public async Task GetWorkoutsByDateRange_ShouldReturnOnlyWorkoutsInRange()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
+        // Act
         var workout1 = CreateWorkout(userId, "Workout 1", DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         var workout2 = CreateWorkout(userId, "Workout 2", DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         var workout3 = CreateWorkout(userId, "Workout 3", DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
@@ -25,10 +27,12 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
 
+        // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate && w.Date <= endDate)
             .ToListAsync();
 
+        // Assert
         results.Should().HaveCount(1);
         results[0].Name.Should().Be("Workout 2");
     }
@@ -36,6 +40,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
     [Fact]
     public async Task GetWorkoutsByDateRange_WithStartDateOnly_ShouldReturnWorkoutsAfterDate()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -43,12 +48,12 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
         var workout1 = CreateWorkout(userId, "Workout 1", DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         var workout2 = CreateWorkout(userId, "Workout 2", DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         var workout3 = CreateWorkout(userId, "Workout 3", DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
-
         Context.Workouts.AddRange(workout1, workout2, workout3);
         await SaveChangesAsync();
 
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
 
+        // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate)
             .OrderBy(w => w.Date)
@@ -62,6 +67,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
     [Fact]
     public async Task GetWorkoutsByDateRange_WithEndDateOnly_ShouldReturnWorkoutsBeforeDate()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -69,12 +75,12 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
         var workout1 = CreateWorkout(userId, "Workout 1", DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         var workout2 = CreateWorkout(userId, "Workout 2", DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         var workout3 = CreateWorkout(userId, "Workout 3", DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
-
         Context.Workouts.AddRange(workout1, workout2, workout3);
         await SaveChangesAsync();
 
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
 
+        // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date <= endDate)
             .OrderBy(w => w.Date)
@@ -88,19 +94,20 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
     [Fact]
     public async Task GetWorkoutsByDateRange_WithNoWorkoutsInRange_ShouldReturnEmpty()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
         var workout1 = CreateWorkout(userId, "Workout 1", DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         var workout2 = CreateWorkout(userId, "Workout 2", DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
-
         Context.Workouts.AddRange(workout1, workout2);
         await SaveChangesAsync();
 
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
 
+        // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate && w.Date <= endDate)
             .ToListAsync();

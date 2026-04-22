@@ -19,14 +19,17 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
     [Fact]
     public async Task GetProgress_WithMultipleWorkouts_ShouldReturnProgressOverTime()
     {
+        // Arrange
         var exerciseName = "Bench Press";
         
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-10), exerciseName, 3, 8, 60);
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-5), exerciseName, 3, 10, 70);
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-1), exerciseName, 4, 10, 75);
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/progress?exercise={exerciseName}");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var progress = await response.ToResponseModel<List<ExerciseProgressDto>>();
         
@@ -39,12 +42,15 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
     [Fact]
     public async Task GetProgress_WithCaseInsensitiveExerciseName_ShouldReturnResults()
     {
+        // Arrange
         var exerciseName = "Squat";
         
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-1), exerciseName, 3, 10, 100);
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/progress?exercise=SQUAT");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var progress = await response.ToResponseModel<List<ExerciseProgressDto>>();
         
@@ -55,10 +61,13 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
     [Fact]
     public async Task GetProgress_WithNoMatchingExercise_ShouldReturnEmptyList()
     {
+        // Arrange
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-1), "Squat", 3, 10, 100);
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/progress?exercise=Bench Press");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var progress = await response.ToResponseModel<List<ExerciseProgressDto>>();
         
@@ -68,14 +77,17 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
     [Fact]
     public async Task GetProgress_ShouldOrderByDate()
     {
+        // Arrange
         var exerciseName = "Deadlift";
         
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-1), exerciseName, 3, 5, 140);
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-10), exerciseName, 3, 5, 120);
         await CreateWorkoutWithExercise(DateTime.UtcNow.AddDays(-5), exerciseName, 3, 5, 130);
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/progress?exercise={exerciseName}");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var progress = await response.ToResponseModel<List<ExerciseProgressDto>>();
         
@@ -88,6 +100,7 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
     [Fact]
     public async Task GetProgress_WithMultipleExercisesInWorkout_ShouldReturnOnlyMatching()
     {
+        // Arrange
         var workout = Workout.New(new WorkoutId(Guid.NewGuid()), _testUser.Id, "Full Body");
         workout.SetDate(DateTime.UtcNow.AddDays(-1));
         workout.SetMetrics(90, 600);
@@ -103,8 +116,10 @@ public class ExerciseProgressIntegrationTests : BaseIntegrationTest, IAsyncLifet
         Context.Workouts.Add(workout);
         await SaveChangesAsync();
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/progress?exercise=Bench Press");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var progress = await response.ToResponseModel<List<ExerciseProgressDto>>();
         

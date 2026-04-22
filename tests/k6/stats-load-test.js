@@ -21,9 +21,12 @@ export const options = {
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5146';
 
 export default function () {
+  // Arrange
   const userId = '00000000-0000-0000-0000-000000000001';
   
+  // Act
   const statsResponse = http.get(`${BASE_URL}/users/${userId}/stats`);
+  // Assert
   
   const statsCheck = check(statsResponse, {
     'stats status is 200': (r) => r.status === 200,
@@ -38,11 +41,14 @@ export default function () {
   
   errorRate.add(!statsCheck);
 
+  // Arrange
   const startDate = '2024-01-01';
   const endDate = '2024-12-31';
+  // Act
   const filteredStatsResponse = http.get(
     `${BASE_URL}/users/${userId}/stats?startDate=${startDate}&endDate=${endDate}`
   );
+  // Assert
   
   const filteredCheck = check(filteredStatsResponse, {
     'filtered stats status is 200': (r) => r.status === 200,

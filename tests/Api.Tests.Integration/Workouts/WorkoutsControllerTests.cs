@@ -21,6 +21,7 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task CreateWorkout_WithValidData_ShouldCreateWorkout()
     {
+        // Arrange
         var request = new CreateWorkoutDto(
             UserId: _testUser.Id.Value,
             Name: "Morning Run",
@@ -29,8 +30,10 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             DurationMinutes: 30,
             CaloriesBurned: 250);
 
+        // Act
         var response = await Client.PostAsJsonAsync("/api/workouts", request);
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var workout = await response.ToResponseModel<WorkoutDto>();
         workout.Name.Should().Be(request.Name);
@@ -44,6 +47,7 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task CreateWorkout_WithFutureDate_ShouldReturnBadRequest()
     {
+        // Arrange
         var request = new CreateWorkoutDto(
             UserId: _testUser.Id.Value,
             Name: "Future Workout",
@@ -52,14 +56,17 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             DurationMinutes: 30,
             CaloriesBurned: 250);
 
+        // Act
         var response = await Client.PostAsJsonAsync("/api/workouts", request);
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task CreateWorkout_WithNegativeCalories_ShouldReturnBadRequest()
     {
+        // Arrange
         var request = new CreateWorkoutDto(
             UserId: _testUser.Id.Value,
             Name: "Invalid Workout",
@@ -68,18 +75,23 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             DurationMinutes: 30,
             CaloriesBurned: -100);
 
+        // Act
         var response = await Client.PostAsJsonAsync("/api/workouts", request);
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task GetWorkout_WithValidId_ShouldReturnWorkoutWithExercises()
     {
+        // Arrange
         var workout = await CreateTestWorkoutWithExercises();
 
+        // Act
         var response = await Client.GetAsync($"/api/workouts/{workout.Id.Value}");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var result = await response.ToResponseModel<WorkoutDto>();
         result.Id.Should().Be(workout.Id.Value);
@@ -90,16 +102,20 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task GetWorkout_WithInvalidId_ShouldReturnNotFound()
     {
+        // Arrange
         var invalidId = Guid.NewGuid();
 
+        // Act
         var response = await Client.GetAsync($"/api/workouts/{invalidId}");
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task UpdateWorkout_WithValidData_ShouldUpdateWorkout()
     {
+        // Arrange
         var workout = await CreateTestWorkout();
 
         var updateRequest = new UpdateWorkoutDto(
@@ -109,8 +125,10 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             DurationMinutes: 45,
             CaloriesBurned: 350);
 
+        // Act
         var response = await Client.PutAsJsonAsync($"/api/workouts/{workout.Id.Value}", updateRequest);
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var updated = await response.ToResponseModel<WorkoutDto>();
         updated.Name.Should().Be(updateRequest.Name);
@@ -122,10 +140,13 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task DeleteWorkout_WithValidId_ShouldDeleteWorkout()
     {
+        // Arrange
         var workout = await CreateTestWorkout();
 
+        // Act
         var response = await Client.DeleteAsync($"/api/workouts/{workout.Id.Value}");
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         Context.Workouts.Any(w => w.Id == workout.Id).Should().BeFalse();
     }
@@ -133,11 +154,14 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task DeleteWorkout_ShouldCascadeDeleteExercises()
     {
+        // Arrange
         var workout = await CreateTestWorkoutWithExercises();
         var exerciseIds = workout.Exercises.Select(e => e.Id).ToList();
 
+        // Act
         var response = await Client.DeleteAsync($"/api/workouts/{workout.Id.Value}");
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         Context.Workouts.Any(w => w.Id == workout.Id).Should().BeFalse();
         
@@ -150,6 +174,7 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task AddExercise_WithValidData_ShouldAddExerciseToWorkout()
     {
+        // Arrange
         var workout = await CreateTestWorkout();
 
         var exerciseRequest = new AddExerciseDto(
@@ -159,8 +184,10 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             WeightKg: 80,
             DurationSeconds: null);
 
+        // Act
         var response = await Client.PostAsJsonAsync($"/api/workouts/{workout.Id.Value}/exercises", exerciseRequest);
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var result = await response.ToResponseModel<WorkoutDto>();
         result.Exercises.Should().ContainSingle();
@@ -173,6 +200,7 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task AddExercise_WithInvalidSets_ShouldReturnBadRequest()
     {
+        // Arrange
         var workout = await CreateTestWorkout();
 
         var exerciseRequest = new AddExerciseDto(
@@ -182,8 +210,10 @@ public class WorkoutsControllerTests : BaseIntegrationTest, IAsyncLifetime
             WeightKg: null,
             DurationSeconds: null);
 
+        // Act
         var response = await Client.PostAsJsonAsync($"/api/workouts/{workout.Id.Value}/exercises", exerciseRequest);
 
+        // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 

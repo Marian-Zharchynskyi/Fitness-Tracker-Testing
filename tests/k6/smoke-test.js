@@ -18,7 +18,6 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost:5146';
 
 export default function () {
   // Arrange
-  // Try to hit API to verify health
   // Act
   const getResponse = http.get(`${BASE_URL}/users/get-all`);
   // Assert

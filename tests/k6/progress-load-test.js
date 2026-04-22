@@ -55,6 +55,7 @@ export default function () {
   
   errorRate.add(!progressCheck);
 
+  // Arrange
   const workoutsResponse = http.get(`${BASE_URL}/users/${userId}/workouts`);
   // Assert
   

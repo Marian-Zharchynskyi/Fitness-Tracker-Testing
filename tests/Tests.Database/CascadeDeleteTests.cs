@@ -16,7 +16,6 @@ public class CascadeDeleteTests : BaseDatabaseTest
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
-        // Act
         var workout = Workout.New(new WorkoutId(Guid.NewGuid()), userId, "Strength Training");
         workout.SetDate(DateTime.UtcNow.AddDays(-1));
         workout.SetMetrics(60, 400);
@@ -34,6 +33,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
 
         var exerciseIds = workout.Exercises.Select(e => e.Id).ToList();
 
+        // Act
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
         // Assert
@@ -78,6 +78,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
         var workoutIds = new[] { workout1.Id, workout2.Id };
         var exerciseIds = new[] { exercise1.Id, exercise2.Id };
 
+        // Act
         Context.Users.Remove(user);
         await SaveChangesAsync();
 
@@ -114,6 +115,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
         Context.Workouts.Add(workout);
         await SaveChangesAsync();
 
+        // Act
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
         // Assert
@@ -148,9 +150,11 @@ public class CascadeDeleteTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2);
         await SaveChangesAsync();
 
+        // Act
         Context.Workouts.Remove(workout1);
         await SaveChangesAsync();
 
+        //Assert
         var workout1Exists = await Context.Workouts.AnyAsync(w => w.Id == workout1.Id);
         var workout2Exists = await Context.Workouts.AnyAsync(w => w.Id == workout2.Id);
         var exercise1Exists = await Context.Exercises.AnyAsync(e => e.Id == exercise1.Id);

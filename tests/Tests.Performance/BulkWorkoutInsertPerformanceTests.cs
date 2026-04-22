@@ -29,6 +29,7 @@ public class BulkWorkoutInsertPerformanceTests : PerformanceTestBase
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         Context.Workouts.AddRange(workouts);
         await Context.SaveChangesAsync();
 
@@ -86,7 +87,6 @@ public class BulkWorkoutInsertPerformanceTests : PerformanceTestBase
         var user = await Context.Users.FirstAsync();
         var workouts = GenerateWorkouts(user.Id, 200);
 
-        // Act
         Context.Workouts.AddRange(workouts);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();

@@ -21,6 +21,7 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
     {
         // Arrange
         var user = await Context.Users.FirstAsync();
+
         var stopwatch = Stopwatch.StartNew();
 
         // Act
@@ -77,9 +78,10 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
     public async Task CalculateStats_ForMultipleUsers_ShouldCompleteInUnder2Seconds()
     {
         // Arrange
+
         var stopwatch = Stopwatch.StartNew();
 
-                // Act
+        // Act
         var allStats = await Context.Workouts
             .GroupBy(w => w.UserId)
             .Select(g => new
@@ -108,6 +110,7 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         var progress = await Context.Workouts
             .Where(w => w.UserId == user.Id)
             .OrderBy(w => w.Date)

@@ -26,6 +26,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
 
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
+
         // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate && w.Date <= endDate)
@@ -51,6 +52,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
         await SaveChangesAsync();
 
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
+
         // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate)
@@ -77,6 +79,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
         await SaveChangesAsync();
 
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
+
         // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date <= endDate)
@@ -103,6 +106,7 @@ public class WorkoutDateRangeQueryTests : BaseDatabaseTest
 
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
+
         // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == userId && w.Date >= startDate && w.Date <= endDate)

@@ -16,7 +16,6 @@ public class StatsAggregationTests : BaseDatabaseTest
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
 
-        // Act
         var workout1 = CreateWorkout(userId, 30, 200);
         var workout2 = CreateWorkout(userId, 45, 350);
         var workout3 = CreateWorkout(userId, 60, 500);
@@ -24,6 +23,7 @@ public class StatsAggregationTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2, workout3);
         await SaveChangesAsync();
 
+        // Act
         var totalWorkouts = await Context.Workouts
             .Where(w => w.UserId == userId)
             .CountAsync();
@@ -46,6 +46,7 @@ public class StatsAggregationTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2, workout3);
         await SaveChangesAsync();
 
+        // Act
         var totalCalories = await Context.Workouts
             .Where(w => w.UserId == userId)
             .SumAsync(w => w.CaloriesBurned ?? 0);
@@ -67,6 +68,7 @@ public class StatsAggregationTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2, workout3);
         await SaveChangesAsync();
 
+        // Act
         var avgDuration = await Context.Workouts
             .Where(w => w.UserId == userId)
             .AverageAsync(w => w.DurationMinutes ?? 0);
@@ -126,6 +128,7 @@ public class StatsAggregationTests : BaseDatabaseTest
         Context.Workouts.AddRange(user1Workout1, user1Workout2, user2Workout1);
         await SaveChangesAsync();
 
+        // Act
         var user1TotalCalories = await Context.Workouts
             .Where(w => w.UserId == user1Id)
             .SumAsync(w => w.CaloriesBurned ?? 0);
@@ -134,6 +137,7 @@ public class StatsAggregationTests : BaseDatabaseTest
             .Where(w => w.UserId == user2Id)
             .SumAsync(w => w.CaloriesBurned ?? 0);
 
+        // Assert
         user1TotalCalories.Should().Be(550);
         user2TotalCalories.Should().Be(500);
     }
@@ -155,6 +159,7 @@ public class StatsAggregationTests : BaseDatabaseTest
         Context.Workouts.AddRange(workout1, workout2);
         await SaveChangesAsync();
 
+        // Act
         var totalCalories = await Context.Workouts
             .Where(w => w.UserId == userId)
             .SumAsync(w => w.CaloriesBurned ?? 0);
@@ -163,6 +168,7 @@ public class StatsAggregationTests : BaseDatabaseTest
             .Where(w => w.UserId == userId)
             .AverageAsync(w => w.DurationMinutes ?? 0);
 
+        // Assert
         totalCalories.Should().Be(200);
         avgDuration.Should().Be(15);
     }

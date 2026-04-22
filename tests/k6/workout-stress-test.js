@@ -20,7 +20,7 @@ export const options = {
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5146';
 
 export function setup() {
-  // Act
+  // Arrange
   const usersResponse = http.get(`${BASE_URL}/users/get-all`);
   let userId = '00000000-0000-0000-0000-000000000001';
   

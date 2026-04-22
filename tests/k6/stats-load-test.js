@@ -41,6 +41,7 @@ export default function () {
   
   errorRate.add(!statsCheck);
 
+  // Arrange
   const startDate = '2024-01-01';
   const endDate = '2024-12-31';
   // Act

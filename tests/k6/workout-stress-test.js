@@ -20,6 +20,7 @@ export const options = {
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5146';
 
 export function setup() {
+  // Act
   const usersResponse = http.get(`${BASE_URL}/users/get-all`);
   let userId = '00000000-0000-0000-0000-000000000001';
   
@@ -52,6 +53,7 @@ export function setup() {
 }
 
 export default function (data) {
+  // Arrange
   const userId = data.userId;
   
   const workoutPayload = JSON.stringify({
@@ -70,6 +72,7 @@ export default function (data) {
   };
 
   const createResponse = http.post(`${BASE_URL}/api/workouts`, workoutPayload, params);
+  // Assert
   
   const createCheck = check(createResponse, {
     'create workout status is 200': (r) => r.status === 200,
@@ -89,7 +92,9 @@ export default function (data) {
   if (createResponse.status === 200) {
     const workout = JSON.parse(createResponse.body);
     
+  // Act
     const getResponse = http.get(`${BASE_URL}/api/workouts/${workout.id}`);
+  // Assert
     const getCheck = check(getResponse, {
       'get workout status is 200': (r) => r.status === 200,
       'get workout response time < 500ms': (r) => r.timings.duration < 500,
@@ -110,6 +115,7 @@ export default function (data) {
       exercisePayload,
       params
     );
+  // Assert
     
     const exerciseCheck = check(addExerciseResponse, {
       'add exercise status is 200': (r) => r.status === 200,

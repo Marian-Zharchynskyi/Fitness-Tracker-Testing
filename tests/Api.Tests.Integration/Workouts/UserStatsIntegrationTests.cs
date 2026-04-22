@@ -21,12 +21,15 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task GetStats_WithMultipleWorkouts_ShouldReturnCorrectStatistics()
     {
+        // Arrange
         await CreateWorkout(30, 200, DateTime.UtcNow.AddDays(-10));
         await CreateWorkout(45, 350, DateTime.UtcNow.AddDays(-5));
         await CreateWorkout(60, 500, DateTime.UtcNow.AddDays(-1));
 
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/stats");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var stats = await response.ToResponseModel<UserStatsDto>();
         stats.TotalWorkouts.Should().Be(3);
@@ -37,6 +40,7 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task GetStats_WithDateRange_ShouldFilterWorkouts()
     {
+        // Arrange
         await CreateWorkout(30, 200, DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         await CreateWorkout(45, 350, DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         await CreateWorkout(60, 500, DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
@@ -44,9 +48,11 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 3, 31), DateTimeKind.Utc);
 
+        // Act
         var response = await Client.GetAsync(
             $"/users/{_testUser.Id.Value}/stats?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var stats = await response.ToResponseModel<UserStatsDto>();
         stats.TotalWorkouts.Should().Be(2);
@@ -57,8 +63,11 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task GetStats_WithNoWorkouts_ShouldReturnZeroStats()
     {
+        // Arrange
+        // Act
         var response = await Client.GetAsync($"/users/{_testUser.Id.Value}/stats");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var stats = await response.ToResponseModel<UserStatsDto>();
         stats.TotalWorkouts.Should().Be(0);
@@ -69,6 +78,7 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     [Fact]
     public async Task GetWorkouts_WithDateRangeFilter_ShouldReturnFilteredWorkouts()
     {
+        // Arrange
         await CreateWorkout(30, 200, DateTime.SpecifyKind(new DateTime(2024, 1, 15), DateTimeKind.Utc));
         await CreateWorkout(45, 350, DateTime.SpecifyKind(new DateTime(2024, 2, 15), DateTimeKind.Utc));
         await CreateWorkout(60, 500, DateTime.SpecifyKind(new DateTime(2024, 3, 15), DateTimeKind.Utc));
@@ -76,9 +86,11 @@ public class UserStatsIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var startDate = DateTime.SpecifyKind(new DateTime(2024, 2, 1), DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(new DateTime(2024, 2, 28), DateTimeKind.Utc);
 
+        // Act
         var response = await Client.GetAsync(
             $"/users/{_testUser.Id.Value}/workouts?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}");
 
+        // Assert
         response.IsSuccessStatusCode.Should().BeTrue();
         var workouts = await response.ToResponseModel<List<WorkoutDto>>();
         workouts.Should().HaveCount(1);

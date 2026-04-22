@@ -67,6 +67,7 @@ public class UserRepositoryTests : BaseDatabaseTest
     [Fact]
     public async Task SearchById_ShouldReturnNone_WhenDoesNotExist()
     {
+        // Arrange
         // Act
         var result = await _repository.GetById(new UserId(Guid.NewGuid()), CancellationToken.None);
 

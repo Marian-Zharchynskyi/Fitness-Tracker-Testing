@@ -36,7 +36,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
 
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
-
+        // Assert
         var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workout.Id);
         workoutExists.Should().BeFalse();
 
@@ -51,6 +51,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteUser_ShouldCascadeDeleteWorkoutsAndExercises()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -80,12 +81,14 @@ public class CascadeDeleteTests : BaseDatabaseTest
         Context.Users.Remove(user);
         await SaveChangesAsync();
 
+        // Assert
         var userExists = await Context.Users.AnyAsync(u => u.Id == userId);
         userExists.Should().BeFalse();
 
         foreach (var workoutId in workoutIds)
         {
-            var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workoutId);
+        // Assert
+        var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workoutId);
             workoutExists.Should().BeFalse();
         }
 
@@ -99,6 +102,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_WithNoExercises_ShouldDeleteSuccessfully()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);
@@ -112,7 +116,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
 
         Context.Workouts.Remove(workout);
         await SaveChangesAsync();
-
+        // Assert
         var workoutExists = await Context.Workouts.AnyAsync(w => w.Id == workout.Id);
         workoutExists.Should().BeFalse();
     }
@@ -120,6 +124,7 @@ public class CascadeDeleteTests : BaseDatabaseTest
     [Fact]
     public async Task DeleteWorkout_ShouldNotAffectOtherWorkouts()
     {
+        // Arrange
         var userId = new UserId(Guid.NewGuid());
         var user = User.New(userId, "test@example.com", "Test User");
         Context.Users.Add(user);

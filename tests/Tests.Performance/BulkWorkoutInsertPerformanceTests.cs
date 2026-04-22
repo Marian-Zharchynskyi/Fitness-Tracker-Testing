@@ -23,6 +23,7 @@ public class BulkWorkoutInsertPerformanceTests : PerformanceTestBase
     [Fact]
     public async Task BulkInsert_100Workouts_ShouldCompleteInUnder5Seconds()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var workouts = GenerateWorkouts(user.Id, 100);
 
@@ -34,55 +35,65 @@ public class BulkWorkoutInsertPerformanceTests : PerformanceTestBase
         stopwatch.Stop();
         _output.WriteLine($"Bulk insert of 100 workouts took {stopwatch.ElapsedMilliseconds}ms");
 
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(5000);
     }
 
     [Fact]
     public async Task BulkInsert_500Workouts_ShouldCompleteInUnder20Seconds()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var workouts = GenerateWorkouts(user.Id, 500);
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         Context.Workouts.AddRange(workouts);
         await Context.SaveChangesAsync();
 
         stopwatch.Stop();
         _output.WriteLine($"Bulk insert of 500 workouts took {stopwatch.ElapsedMilliseconds}ms");
 
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(20000);
     }
 
     [Fact]
     public async Task BulkInsert_WithExercises_ShouldCompleteEfficiently()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var workouts = GenerateWorkoutsWithExercises(user.Id, 100, 5);
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         Context.Workouts.AddRange(workouts);
         await Context.SaveChangesAsync();
 
         stopwatch.Stop();
         _output.WriteLine($"Bulk insert of 100 workouts with 5 exercises each took {stopwatch.ElapsedMilliseconds}ms");
 
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(10000);
     }
 
     [Fact]
     public async Task QueryWorkouts_AfterBulkInsert_ShouldBeEfficient()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var workouts = GenerateWorkouts(user.Id, 200);
 
+        // Act
         Context.Workouts.AddRange(workouts);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         var results = await Context.Workouts
             .Where(w => w.UserId == user.Id)
             .OrderByDescending(w => w.Date)
@@ -93,6 +104,7 @@ public class BulkWorkoutInsertPerformanceTests : PerformanceTestBase
         _output.WriteLine($"Query for 50 most recent workouts took {stopwatch.ElapsedMilliseconds}ms");
 
         results.Should().HaveCount(50);
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(500);
     }
 

@@ -30,12 +30,15 @@ const exercises = [
 ];
 
 export default function () {
+  // Arrange
   const userId = '00000000-0000-0000-0000-000000000001';
   const exercise = exercises[Math.floor(Math.random() * exercises.length)];
   
+  // Act
   const progressResponse = http.get(
     `${BASE_URL}/users/${userId}/progress?exercise=${encodeURIComponent(exercise)}`
   );
+  // Assert
   
   const progressCheck = check(progressResponse, {
     'progress status is 200': (r) => r.status === 200,
@@ -53,6 +56,7 @@ export default function () {
   errorRate.add(!progressCheck);
 
   const workoutsResponse = http.get(`${BASE_URL}/users/${userId}/workouts`);
+  // Assert
   
   const workoutsCheck = check(workoutsResponse, {
     'workouts status is 200': (r) => r.status === 200,

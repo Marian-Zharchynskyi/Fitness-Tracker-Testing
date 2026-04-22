@@ -19,9 +19,11 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
     [Fact]
     public async Task CalculateStats_For100Workouts_ShouldCompleteInUnder500Ms()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         var stats = await Context.Workouts
             .Where(w => w.UserId == user.Id)
             .GroupBy(w => w.UserId)
@@ -36,6 +38,7 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
         stopwatch.Stop();
         _output.WriteLine($"Stats calculation took {stopwatch.ElapsedMilliseconds}ms");
 
+        // Assert
         stats.Should().NotBeNull();
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(500);
     }
@@ -43,12 +46,14 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
     [Fact]
     public async Task CalculateStats_WithDateFilter_ShouldCompleteInUnder500Ms()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var startDate = DateTime.UtcNow.AddDays(-90);
         var endDate = DateTime.UtcNow;
 
         var stopwatch = Stopwatch.StartNew();
 
+        // Act
         var stats = await Context.Workouts
             .Where(w => w.UserId == user.Id && w.Date >= startDate && w.Date <= endDate)
             .GroupBy(w => w.UserId)
@@ -63,6 +68,7 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
         stopwatch.Stop();
         _output.WriteLine($"Filtered stats calculation took {stopwatch.ElapsedMilliseconds}ms");
 
+        // Assert
         stats.Should().NotBeNull();
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(500);
     }
@@ -70,8 +76,10 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
     [Fact]
     public async Task CalculateStats_ForMultipleUsers_ShouldCompleteInUnder2Seconds()
     {
+        // Arrange
         var stopwatch = Stopwatch.StartNew();
 
+                // Act
         var allStats = await Context.Workouts
             .GroupBy(w => w.UserId)
             .Select(g => new
@@ -87,12 +95,14 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
         _output.WriteLine($"Stats for {allStats.Count} users took {stopwatch.ElapsedMilliseconds}ms");
 
         allStats.Should().NotBeEmpty();
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(2000);
     }
 
     [Fact]
     public async Task GetExerciseProgress_ShouldCompleteInUnder1Second()
     {
+        // Arrange
         var user = await Context.Users.FirstAsync();
         var exerciseName = "Bench Press";
 
@@ -116,6 +126,7 @@ public class StatsCalculationPerformanceTests : PerformanceTestBase
         stopwatch.Stop();
         _output.WriteLine($"Exercise progress query took {stopwatch.ElapsedMilliseconds}ms, found {progress.Count} records");
 
+        // Assert
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(1000);
     }
 }
